@@ -1,5 +1,7 @@
 package simulador.model.network;
 
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,8 +13,11 @@ public class SimpleNetwork {
 	
 	private List<Node> nodes;
 	
+	private List<Link> links;
+	
 	public SimpleNetwork() {
 		this.nodes = new ArrayList<Node>();
+		this.links = new ArrayList<Link>();
 	}
 	
 	public SimpleNetwork(String label) {
@@ -36,6 +41,26 @@ public class SimpleNetwork {
 		this.nodes = nodes;
 	}
 	
+	public List<Link> getLinks() {
+		return links;
+	}
+
+	public void setLinks(List<Link> links) {
+		this.links = links;
+	}
+	
+	public void addLink(Link link) {
+		if(!this.links.contains(link)) {
+			this.links.add(link);
+		}
+	}
+	
+	public void removeLink(Link link) {
+		if(!this.links.contains(link)) {
+			this.links.remove(link);
+		}
+	}
+
 	public void addNode(Node node) {
 		if(!this.nodes.contains(node)) {
 			this.nodes.add(node);
@@ -47,6 +72,18 @@ public class SimpleNetwork {
 			node.clear();
 			this.nodes.remove(node);
 		}
+	}
+	
+	public void removeSelectedNodes() {
+		ArrayList<Node> selected = new ArrayList<Node>();
+		for(Node n : this.nodes) {
+			if(n.isSelected()) {
+				selected.add(n);
+				n.clear();
+			}
+		}
+		this.nodes.removeAll(selected);
+		this.links = this.getLinksList();
 	}
 	
 	public Node createNode(String label) {
@@ -71,6 +108,59 @@ public class SimpleNetwork {
 				if(!list.contains(l)) {
 					list.add(l);
 				}
+			}
+		}
+		return list;
+	}
+	
+	public void selectNone() {
+		for(Node n : this.nodes) {
+			n.setSelected(false);
+		}
+	}
+	
+	public boolean selectOne(Point p) {
+		for(Node n : this.nodes) {
+			if(n.contains(p)) {
+				if(!n.isSelected()) {
+					this.selectNone();
+					n.setSelected(true);
+				}
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public void selectToggle(Point p) {
+		for(Node n : this.nodes) {
+			if(n.contains(p)) {
+                n.setSelected(!n.isSelected());
+            }
+		}
+	}
+	
+	public void updatePosition(Point p) {
+		 for(Node n : this.nodes) {
+			 if (n.isSelected()) {
+				 n.getPoint().x += p.x;
+				 n.getPoint().y += p.y;
+                 n.setBoundary(n.getB());
+             }
+         }
+	}
+	
+	public void selectRect(Rectangle r) {
+		for(Node n : this.nodes) {
+			n.setSelected(r.contains(n.getPoint()));
+        }
+	}
+	
+	public List<Node> getSelectedNodes() {
+		ArrayList<Node> list = new ArrayList<Node>();
+		for(Node n : this.nodes) {
+			if(n.isSelected()) {
+				list.add(n);
 			}
 		}
 		return list;

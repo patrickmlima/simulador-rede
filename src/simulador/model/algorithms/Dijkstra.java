@@ -33,6 +33,7 @@ public class Dijkstra {
 				Node n = link.getFrom().equals(v) ? link.getTo() : link.getFrom();
 				if(dist.get(n.getId()) == null || (dist.get(v.getId()) != null && 
 						(dist.get(v.getId()) + link.getLength() < dist.get(n.getId())) ) ) {
+					System.out.println(n.getLabel());
 					dist.put(n.getId(), dist.get(v.getId()) + link.getLength());
 				}
 			}

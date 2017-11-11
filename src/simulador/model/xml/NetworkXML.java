@@ -1,5 +1,6 @@
 package simulador.model.xml;
 
+import java.awt.Point;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -43,20 +44,12 @@ public class NetworkXML {
 			Element nodesEl = doc.createElement("nodes");
 			
 			for(Node node : network.getNodes()) {
-//				Element nodeId = doc.createElement("id");
-//				nodeId.appendChild(doc.createTextNode(node.getId()));
-//				
-//				Element nodeLabel = doc.createElement("label");
-//				nodeLabel.appendChild(doc.createTextNode(node.getLabel()));
-//				
-//				Element nodeEl = doc.createElement("node");
-//				nodeEl.appendChild(nodeId);
-//				nodeEl.appendChild(nodeLabel);
-//				
-				
 				Element nodeEl = doc.createElement("node");
 				nodeEl.setAttribute("id", node.getId());
 				nodeEl.setAttribute("label", node.getLabel());
+				nodeEl.setAttribute("pointX", Integer.toString(node.getPoint().x) );
+				nodeEl.setAttribute("pointY", Integer.toString(node.getPoint().y) );
+				nodeEl.setAttribute("radius", Integer.toString(node.getRadius()) );
 				
 				nodesEl.appendChild(nodeEl);
 			}
@@ -65,28 +58,6 @@ public class NetworkXML {
 			
 			Element linksEl = doc.createElement("links");
 			for(Link l : links) {
-//				Element linkId = doc.createElement("id");
-//				linkId.appendChild(doc.createTextNode(l.getId()));
-//				
-//				Element linkLength = doc.createElement("length");
-//				linkLength.appendChild(doc.createTextNode(l.getLength().toString()));
-//				
-//				Element linkIsBidirectional = doc.createElement("isBidirectional");
-//				linkIsBidirectional.appendChild(doc.createTextNode(l.getIsBidirectional().toString()));
-//				
-//				Element linkFrom = doc.createElement("from");
-//				linkFrom.appendChild(doc.createTextNode(l.getFrom().getId()));
-//				
-//				Element linkTo = doc.createElement("to");
-//				linkTo.appendChild(doc.createTextNode(l.getTo().getId()));
-//				
-//				Element linkEl = doc.createElement("link");
-//				linkEl.appendChild(linkId);
-//				linkEl.appendChild(linkLength);
-//				linkEl.appendChild(linkIsBidirectional);
-//				linkEl.appendChild(linkFrom);
-//				linkEl.appendChild(linkTo);
-				
 				Element linkEl = doc.createElement("link");
 				linkEl.setAttribute("id", l.getId());
 				linkEl.setAttribute("length", l.getLength().toString());
@@ -145,8 +116,12 @@ public class NetworkXML {
 			int nodesLen = nodes.getLength();
 			for(int i = 0; i < nodesLen; ++i) {
 				Element node = (Element) nodes.item(i);
-				
-				Node n = new Node(node.getAttribute("id"), node.getAttribute("label"));
+				String nId = node.getAttribute("id");
+				String nLabel = node.getAttribute("label");
+				int pointX = Integer.parseInt(node.getAttribute("pointX"));
+				int pointY = Integer.parseInt(node.getAttribute("pointY"));
+				int radius = Integer.parseInt(node.getAttribute("radius"));
+				Node n = new Node(nId, nLabel, new Point(pointX, pointY), radius);
 				network.addNode(n);
 			}
 			
@@ -162,10 +137,9 @@ public class NetworkXML {
 				Boolean isLinkBidirectional = Boolean.parseBoolean(link.getAttribute("isBidirectional"));
 				
 				Link l = new Link(link.getAttribute("id"), linkLength, 
-						isLinkBidirectional);
+						isLinkBidirectional, nodeFrom, nodeTo);
 				
-				nodeFrom.addLink(l);
-				nodeTo.addLink(l);
+				network.addLink(l);
 			}
 			return network;
 		} catch (SAXException | IOException e) {

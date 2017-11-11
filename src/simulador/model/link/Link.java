@@ -1,5 +1,8 @@
 package simulador.model.link;
 
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Point;
 import java.util.UUID;
 
 import simulador.model.node.Node;
@@ -25,6 +28,10 @@ public class Link {
 	
 	public Link(String id, Float length, Boolean isBidirectional) {
 		this(id, length, isBidirectional, null, null);
+	}
+	
+	public Link(Float length, Node from, Node to) {
+		this(null, length, true, from, to);
 	}
 	
 	public Link(String id, Float length, Boolean isBidirectional, Node from, Node to) {
@@ -99,4 +106,11 @@ public class Link {
 			this.getFrom().removeLink(this);
 		}
 	}
+	
+	 public void draw(Graphics g) {
+         Point p1 = to.getPoint();
+         Point p2 = from.getPoint();
+         g.setColor(Color.darkGray);
+         g.drawLine(p1.x, p1.y, p2.x, p2.y);
+     }
 }

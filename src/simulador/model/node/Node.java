@@ -1,5 +1,9 @@
 package simulador.model.node;
 
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -13,6 +17,14 @@ public class Node {
 	
 	private List<Link> links;
 	
+	private Point point;
+	
+	private int radius;
+	
+	private boolean isSelected = false;
+	
+	private Rectangle b = new Rectangle();
+	
 	public Node(String id, String label) {
 		this.id = id;
 		this.label = label;
@@ -24,6 +36,39 @@ public class Node {
 		this.label = label;
 		this.links = new ArrayList<Link>();
 	}
+	
+	public Node(String id, String label, Point p, int r) {
+		this(id, label);
+		this.point = p;
+		this.radius = r;
+		this.setBoundary(b);
+	}
+	
+	public Node(String label, Point p, int r) {
+		this(label);
+		this.point = p;
+		this.radius = r;
+		this.setBoundary(b);
+	}
+	
+	/**
+     * Calculate this node's rectangular boundary.
+     */
+    public void setBoundary(Rectangle b) {
+        b.setBounds(point.x - radius, point.y - radius, 2 * radius, 2 * radius);
+    }
+    
+    /**
+     * Draw this node.
+     */
+    public void draw(Graphics g) {
+        g.setColor(Color.BLACK);
+        g.fillOval(b.x, b.y, b.width, b.height);
+        if (isSelected) {
+            g.setColor(Color.darkGray);
+            g.drawRect(b.x, b.y, b.width, b.height);
+        }
+    }
 
 	public String getId() {
 		return id;
@@ -81,4 +126,44 @@ public class Node {
 		}
 		this.links.clear();
 	}
+
+	public Point getPoint() {
+		return point;
+	}
+
+	public void setPoint(Point p) {
+		this.point = p;
+	}
+
+	public int getRadius() {
+		return radius;
+	}
+
+	public void setRadius(int r) {
+		this.radius = r;
+	}
+
+	public boolean isSelected() {
+		return isSelected;
+	}
+
+	public void setSelected(boolean selected) {
+		this.isSelected = selected;
+	}
+
+	public Rectangle getB() {
+		return b;
+	}
+
+	public void setB(Rectangle b) {
+		this.b = b;
+	}
+
+	public void setLinks(List<Link> links) {
+		this.links = links;
+	}
+	public boolean contains(Point p) {
+		return b.contains(p);
+	}
+
 }
