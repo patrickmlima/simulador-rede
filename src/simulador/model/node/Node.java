@@ -64,6 +64,7 @@ public class Node {
     public void draw(Graphics g) {
         g.setColor(Color.BLACK);
         g.fillOval(b.x, b.y, b.width, b.height);
+        g.drawString(this.getLabel(), b.x, b.y);
         if (isSelected) {
             g.setColor(Color.darkGray);
             g.drawRect(b.x, b.y, b.width, b.height);

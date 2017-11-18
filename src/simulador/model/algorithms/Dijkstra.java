@@ -13,6 +13,7 @@ public class Dijkstra {
 	public Map<String, Float> getMinDistance(List<Node> nodes, Node origin) {
 		HashMap<String, Float> dist = new HashMap<String, Float>();
 		ArrayList<Node> list = new ArrayList<Node>();
+		ArrayList<String> listNo = new ArrayList<String>();
 		
 		list.add(origin);
 		
@@ -31,14 +32,19 @@ public class Dijkstra {
 			
 			for(Link link : v.getLinks()) {
 				Node n = link.getFrom().equals(v) ? link.getTo() : link.getFrom();
-				if(dist.get(n.getId()) == null || (dist.get(v.getId()) != null && 
-						(dist.get(v.getId()) + link.getLength() < dist.get(n.getId())) ) ) {
-					System.out.println(n.getLabel());
-					dist.put(n.getId(), dist.get(v.getId()) + link.getLength());
+				if(dist.get(v.getId()) != null) {
+					System.out.println("vID" + (dist.get(v.getId()) + link.getLength()));
+					System.out.println("tamLink " + link.getLength());
+					if(dist.get(n.getId()) == null || (dist.get(v.getId()) + link.getLength() < dist.get(n.getId())) )  {
+						System.out.println("noLabel " + v.getLabel());
+						listNo.add(v.getLabel());
+						Float f = dist.get(v.getId()) + link.getLength();
+						dist.put(n.getId(), f);
+					}
 				}
 			}
 		}
-		
+		System.out.println("listaNo " + listNo);
 		return dist;
 	}
 }

@@ -78,8 +78,8 @@ public class MainView extends JComponent {
 //		this.HIGH = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDisplayMode().getHeight() - 60;
 //		this.WIDE = (int) (HIGH * 1.33333);
 		
-		this.HIGH = 360;
-		this.WIDE = 660;
+		this.HIGH = 720;
+		this.WIDE = 1500;
 		
 		this.mousePt = new Point(WIDE / 2, HIGH / 2);
 		this.setBounds(0, 0, WIDE, HIGH);
@@ -134,7 +134,7 @@ public class MainView extends JComponent {
 			public void actionPerformed(ActionEvent e) {
 				Float dist = null;
 				do {
-					String distStr = JOptionPane.showInputDialog("Qual a distância entre os nós?");
+					String distStr = JOptionPane.showInputDialog("Qual a distancia entre os nos?");
 					if(distStr == null) {
 						break;
 					}
@@ -189,7 +189,7 @@ public class MainView extends JComponent {
 				JFrame frame = new JFrame("Simulador");
                 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 frame.setBounds(100, 100, mView.WIDE, mView.HIGH);
-                frame.setResizable(false);
+                frame.setResizable(true);
                 frame.setLocationRelativeTo(null);
                 
                 mView.setBounds(frame.getBounds());
@@ -252,7 +252,7 @@ public class MainView extends JComponent {
         				try {
         					BufferedWriter writter = new BufferedWriter(new FileWriter(file));
         					for(int i = 0; i < value; ++i) {
-        						int max = mView.network.getLinks().size();
+        						int max = mView.network.getNodes().size();
         						int originIndex = new Random().nextInt(max);
         						int destIndex; 
         						do {
@@ -261,10 +261,11 @@ public class MainView extends JComponent {
 
         						Node origin = mView.network.getNodes().get(originIndex);
         						Node dest = mView.network.getNodes().get(destIndex);
+        						System.out.println("origin:" + origin.getLabel() + "- dest: "+ dest.getLabel());
         						Map<String, Float> result = (new Dijkstra().getMinDistance(mView.network.getNodes(), origin));
         						writter.write(result.get(dest.getId()) + "\n" );
         						writter.flush();
-//        						System.out.println("min: " + result.get(dest.getId()));
+        						System.out.println("min: " + result.get(dest.getId()));
         					}
         					writter.close();
         				} catch(Exception ex) {
