@@ -1,25 +1,19 @@
 package simulador.view.main;
 
-import javax.swing.JPanel;
-
 import simulador.model.algorithms.Dijkstra;
 import simulador.model.link.Link;
 import simulador.model.network.SimpleNetwork;
 import simulador.model.node.Node;
 import simulador.model.xml.NetworkXML;
 
-import javax.swing.JDesktopPane;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Graphics;
-import java.awt.GraphicsEnvironment;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
@@ -28,21 +22,20 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JComponent;
-import javax.swing.JScrollPane;
+import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import java.awt.event.ActionListener;
+import javax.swing.JInternalFrame;
+import javax.swing.JLabel;
 
 public class MainView extends JComponent {
 	/**
@@ -57,7 +50,7 @@ public class MainView extends JComponent {
 	
 //    private static final int HIGH = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDisplayMode().getHeight() - 60;
 //    private static final int WIDE = (int) (HIGH * 1.33333);
-    private static final int RADIUS = 30;
+    private final int RADIUS = 20;
     
 	 
     private Rectangle mouseRect = new Rectangle();
@@ -113,7 +106,7 @@ public class MainView extends JComponent {
 			public void actionPerformed(ActionEvent arg0) {
 				network.selectNone();
 				Point p = mousePt.getLocation();
-				String name = "Link " + network.getLinks().size() + 1;
+				String name = "Node " + (network.getNodes().size() + 1);
 				Node node = new Node(name, p, RADIUS);
 				node.setSelected(true);
 				network.addNode(node);
@@ -157,6 +150,49 @@ public class MainView extends JComponent {
 		
 		this.addMouseListener(new MouseHandler());
         this.addMouseMotionListener(new MouseMotionHandler());
+	}
+	
+	private void showNodeEdition(Node node) {
+		JInternalFrame internalFrame = new JInternalFrame(node.getLabel());
+		internalFrame.setBounds(399, 115, 241, 181);
+		internalFrame.setClosable(true);
+		add(internalFrame);
+		internalFrame.getContentPane().setLayout(null);
+		
+		JLabel lblId = new JLabel("ID");
+		lblId.setBounds(12, 12, 70, 15);
+		internalFrame.getContentPane().add(lblId);
+		
+		JTextField textField_1 = new JTextField(node.getId());
+		textField_1.setBounds(12, 25, 114, 19);
+		internalFrame.getContentPane().add(textField_1);
+		textField_1.setColumns(10);
+		textField_1.setEditable(false);
+		
+		JLabel lblNome = new JLabel("Nome");
+		lblNome.setBounds(12, 53, 70, 15);
+		internalFrame.getContentPane().add(lblNome);
+		
+		JTextField textField = new JTextField(node.getLabel());
+		textField.setBounds(12, 80, 175, 25);
+		internalFrame.getContentPane().add(textField);
+		textField.setColumns(10);
+		
+		JButton btnAplicar = new JButton("Aplicar");
+		btnAplicar.setBounds(59, 112, 117, 25);
+		internalFrame.getContentPane().add(btnAplicar);
+		internalFrame.setVisible(true);
+		
+		btnAplicar.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				node.setLabel(textField.getText());
+				internalFrame.setVisible(false);
+				remove(internalFrame);
+				repaint(node.getB());
+			}
+		});
 	}
 	
 	@Override
@@ -295,7 +331,15 @@ public class MainView extends JComponent {
         @Override
         public void mousePressed(MouseEvent e) {
             mousePt = e.getPoint();
-            if (e.isShiftDown()) {
+            if(e.getClickCount() == 2) {
+            	List<Node> selected = network.getSelectedNodes();
+            	if(selected != null && selected.size() == 1) {
+            		showNodeEdition(selected.get(0));
+            	} else {
+            		// links
+            	}
+            	
+            } else if (e.isShiftDown()) {
                 network.selectToggle(mousePt);
             } else if (e.isPopupTrigger()) {
                 network.selectOne(mousePt);
