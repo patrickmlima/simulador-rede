@@ -64,6 +64,7 @@ public class NetworkXML {
 				linkEl.setAttribute("isBidirectional", l.getIsBidirectional().toString());
 				linkEl.setAttribute("from", l.getFrom().getId());
 				linkEl.setAttribute("to", l.getTo().getId());
+				linkEl.setAttribute("numLambdas", l.getNumLambdas().toString());
 				
 				linksEl.appendChild(linkEl);
 			}
@@ -135,9 +136,13 @@ public class NetworkXML {
 				
 				Float linkLength = Float.parseFloat(link.getAttribute("length"));
 				Boolean isLinkBidirectional = Boolean.parseBoolean(link.getAttribute("isBidirectional"));
+				Integer numLambdas = 0;
+				if(link.getAttribute("numLambdas") != null) {
+					numLambdas = Integer.parseInt(link.getAttribute("numLambdas"));
+				}
 				
 				Link l = new Link(link.getAttribute("id"), linkLength, 
-						isLinkBidirectional, nodeFrom, nodeTo);
+						isLinkBidirectional, nodeFrom, nodeTo, numLambdas);
 				
 				network.addLink(l);
 			}

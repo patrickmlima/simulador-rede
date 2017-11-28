@@ -10,7 +10,7 @@ import java.util.UUID;
 
 import simulador.model.link.Link;
 
-public class Node {
+public class Node implements Comparable<Node>{
 	private String id;
 	
 	private String label;
@@ -24,6 +24,8 @@ public class Node {
 	private boolean isSelected = false;
 	
 	private Rectangle b = new Rectangle();
+	
+	private Float tmpDistance;
 	
 	public Node(String id, String label) {
 		this.id = id;
@@ -166,5 +168,36 @@ public class Node {
 	public boolean contains(Point p) {
 		return b.contains(p);
 	}
+	
+	public Link getLinkToNode(Node destNode) {
+		for(Link l : this.links) {
+			if(l.getIsBidirectional() != null && l.getIsBidirectional()) {
+				if(l.getFrom().equals(destNode) || l.getTo().equals(destNode)) {
+					return l;
+				}
+			} else {
+				if(l.getTo().equals(destNode)) {
+					return l;
+				}
+			}
+		}
+		return null;
+	}
+	
+	public void setTmpDistance(Float tmpDistance) {
+		this.tmpDistance = tmpDistance;
+	}
+
+	@Override
+	public int compareTo(Node o) {
+		if(this.tmpDistance < o.tmpDistance) {
+			return -1;
+		} else if(this.tmpDistance > o.tmpDistance) {
+			return 1;
+		}
+		return 0;
+	}
+	
+	
 
 }

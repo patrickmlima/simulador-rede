@@ -1,5 +1,6 @@
 package simulador.view.main;
 
+import simulador.model.DTO.DijkstraResult;
 import simulador.model.algorithms.Dijkstra;
 import simulador.model.link.Link;
 import simulador.model.network.SimpleNetwork;
@@ -23,6 +24,7 @@ import java.awt.event.MouseMotionAdapter;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -66,6 +68,7 @@ public class MainView extends JComponent {
     private JButton btnSave;
     private JButton btnImport;
     private JButton btnSimular;
+    private JTextField textFieldDefaultLambdas;
     
 	public MainView() {
 //		this.HIGH = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDisplayMode().getHeight() - 60;
@@ -101,6 +104,11 @@ public class MainView extends JComponent {
 		btnSimular = new JButton("Simular");
 		toolBar.add(btnSimular);
 		
+		textFieldDefaultLambdas = new JTextField();
+		textFieldDefaultLambdas.setText("40");
+		toolBar.add(textFieldDefaultLambdas);
+		textFieldDefaultLambdas.setColumns(4);
+		
 		// listener add node
 		btnAdd.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -126,6 +134,7 @@ public class MainView extends JComponent {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				Float dist = null;
+				Integer numLambdas = Integer.parseInt(textFieldDefaultLambdas.getText());
 				do {
 					String distStr = JOptionPane.showInputDialog("Qual a distancia entre os nos?");
 					if(distStr == null) {
@@ -139,7 +148,7 @@ public class MainView extends JComponent {
 	            	for(int i = 0; i < selected.size() - 1; ++i) {
 	            		Node n1 = selected.get(i);
 	            		Node n2 = selected.get(i + 1);
-	            		Link link = new Link(dist, n1, n2);
+	            		Link link = new Link(dist, n1, n2, numLambdas);
 	            		network.addLink(link);
 	                }
 	            }
@@ -286,30 +295,78 @@ public class MainView extends JComponent {
         				
         				File file = new File("resultados_simulacao.txt");
         				try {
+        					System.out.println("Simulando...");
         					BufferedWriter writter = new BufferedWriter(new FileWriter(file));
+        					Integer qtdBloqueios = 0;
+        					
         					for(int i = 0; i < value; ++i) {
         						int max = mView.network.getNodes().size();
         						int originIndex = new Random().nextInt(max);
-        						int destIndex; 
+        						int destIndex;
         						do {
         							destIndex = new Random().nextInt(max);
         						} while(destIndex == originIndex);
-
+        						
         						Node origin = mView.network.getNodes().get(originIndex);
         						Node dest = mView.network.getNodes().get(destIndex);
-        						System.out.println("origin:" + origin.getLabel() + "- dest: "+ dest.getLabel());
-        						Map<String, Float> result = (new Dijkstra().getMinDistance(mView.network.getNodes(), origin));
-        						writter.write(result.get(dest.getId()) + "\n" );
+        						
+        						DijkstraResult result = (new Dijkstra().getMinDistance(mView.network.getNodes(), origin));
+        						List<Node> sPath = result.getShortestPath(dest);
+        						System.out.print("Simulação " + i + "\n");
+        						writter.write("Simulação " + i + "\n");
+        						System.out.print("From: " + origin.getLabel() + " - To: " + dest.getLabel() + "\n");
+        						writter.write("From: " + origin.getLabel() + " - To: " + dest.getLabel() + "\n");
+        						System.out.print("Shortest Path: ");
+        						writter.write("Shortest Path: ");
+        						
+        						Iterator<Node> it = sPath.iterator();
+        						while(it.hasNext()) {
+        							Node n = it.next();
+        							writter.write(n.getLabel());
+        							System.out.print(n.getLabel());
+        							if(it.hasNext()) {
+        								writter.write(" | ");
+        								System.out.print(" | ");
+        							}
+        						}
+        						writter.write("\n");
+        						System.out.print("\n");
+        						
+        						Float distanceValue = result.getDistances().get(dest);
+        						writter.write("Distance: " + distanceValue.toString() + "\n");
+        						System.out.print("Distance: " + distanceValue.toString() + "\n");
+        						
+        						System.out.println("Need select lambda");
+        						Integer lambda = mView.network.selectLambdaFirstFit(sPath);
+        						writter.write("Chamada Perdida: ");
+        						if(lambda == null) {
+        							qtdBloqueios += 1;
+        							writter.write("SIM");
+        						} else {
+        							writter.write("NÃO");
+        						}
+        						writter.write("\n");
+        						System.out.println("Chamada Perdida: " + (lambda == null ? "SIM" : "NÃO"));
+        						System.out.println("----------------------------------------------------------------------------------\n");
+        						
+        						writter.write("----------------------------------------------------------------------------------\n\n");
         						writter.flush();
-        						System.out.println("min: " + result.get(dest.getId()));
         					}
+        					float pb = Float.parseFloat(qtdBloqueios.toString())/value;
+        					writter.write("PROBABILIDADE DE BLOQUEIO: " + String.format("%.2f", pb) + "\n");
+        					System.out.println("PROBABILIDADE DE BLOQUEIO: " + pb + "\n");
+        					writter.write("----------------------------------------------------------------------------------\n\n");
         					writter.close();
         				} catch(Exception ex) {
         					ex.printStackTrace();
         					System.out.println("Exceção");
         				}
         				
+        				for(Link l : mView.network.getLinks()) {
+        					l.resetAvailableLambdas();
+        				}
         				System.out.println("Finalizada");
+        				System.out.println("");
         			}
         		});
 			}

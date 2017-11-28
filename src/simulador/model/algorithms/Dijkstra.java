@@ -1,17 +1,19 @@
 package simulador.model.algorithms;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
+import simulador.model.DTO.DijkstraResult;
 import simulador.model.link.Link;
 import simulador.model.node.Node;
 
 public class Dijkstra {
 	
-	public Map<String, Float> getMinDistance(List<Node> nodes, Node origin) {
-		HashMap<String, Float> dist = new HashMap<String, Float>();
+	public DijkstraResult getMinDistance(List<Node> nodes, Node origin) {
+		HashMap<Node, Float> dist = new HashMap<Node, Float>();
+		HashMap<Node, Node> pervious = new HashMap<Node, Node>();
 		ArrayList<Node> list = new ArrayList<Node>();
 		ArrayList<String> listNo = new ArrayList<String>();
 		
@@ -19,32 +21,38 @@ public class Dijkstra {
 		
 		for(Node n : nodes) {
 			if(n.equals(origin)) {
-				dist.put(n.getId(), 0.0f);
+				dist.put(n, 0.0f);
+				n.setTmpDistance(0.0f);
 			} else {
-				dist.put(n.getId(), null);
+				dist.put(n, Float.POSITIVE_INFINITY);
 				list.add(n);
+				n.setTmpDistance(Float.POSITIVE_INFINITY);
 			}
+			pervious.put(n, null);
 		}
 		
 		while(!list.isEmpty()) {
-			Node v = list.get(0);
+			Collections.sort(list);
+			
+			Node u = list.get(0);
 			list.remove(0);
 			
-			for(Link link : v.getLinks()) {
-				Node n = link.getFrom().equals(v) ? link.getTo() : link.getFrom();
-				if(dist.get(v.getId()) != null) {
-					System.out.println("vID" + (dist.get(v.getId()) + link.getLength()));
-					System.out.println("tamLink " + link.getLength());
-					if(dist.get(n.getId()) == null || (dist.get(v.getId()) + link.getLength() < dist.get(n.getId())) )  {
-						System.out.println("noLabel " + v.getLabel());
-						listNo.add(v.getLabel());
-						Float f = dist.get(v.getId()) + link.getLength();
-						dist.put(n.getId(), f);
+			for(Link link : u.getLinks()) {
+				Node v = link.getFrom().equals(u) ? link.getTo() : link.getFrom();
+				Float tmp = dist.get(u) + link.getLength();
+//				if(tmp != null) {
+//					tmp = tmp + link.getLength();
+//				}
+//				if(dist.get(v.getId()) != null) {
+					if(tmp < dist.get(v) )  {
+						v.setTmpDistance(tmp);
+						listNo.add(u.getLabel());
+						dist.put(v, tmp);
+						pervious.put(v, u);
 					}
-				}
+//				}
 			}
 		}
-		System.out.println("listaNo " + listNo);
-		return dist;
+		return new DijkstraResult(origin, dist, pervious);
 	}
 }

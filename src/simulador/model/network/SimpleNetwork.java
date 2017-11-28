@@ -3,6 +3,7 @@ package simulador.model.network;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import simulador.model.link.Link;
@@ -164,5 +165,49 @@ public class SimpleNetwork {
 			}
 		}
 		return list;
+	}
+	
+	public Integer selectLambdaFirstFit(List<Node> path) {
+		int pathSize = path.size();
+		ArrayList<Link> pathLinks = new ArrayList<Link>();
+		
+		Node origin = path.get(0);
+		Node nextNode = path.get(1);
+		Link firstLink = origin.getLinkToNode(nextNode);
+		
+		boolean lambdaChosen = false;
+		Integer selectedLambda = -1;
+		do {
+			Node n1 = nextNode;
+			pathLinks.add(firstLink);
+			selectedLambda = firstLink.getNextAvailableLambda(selectedLambda);
+			if(selectedLambda != null) {
+				for(int i = 2; i < pathSize; ++i) {
+					Node n2 = path.get(i);
+					Link l = n1.getLinkToNode(n2);
+					if(l.isLambdaAvailable(selectedLambda)) {
+						pathLinks.add(l);
+						n1 = n2;
+					} else {
+						selectedLambda += 1;
+						pathLinks.clear();
+						break;
+					}
+				}
+				if(!pathLinks.isEmpty()) {
+					lambdaChosen = true;
+					break;
+				}
+			} else {
+				break;
+			}
+		} while(true);
+		if(lambdaChosen) {
+			for(Link l : pathLinks) {
+				l.setLambdaStatus(selectedLambda, false);
+			}
+			return selectedLambda;
+		}
+		return null;
 	}
 }
