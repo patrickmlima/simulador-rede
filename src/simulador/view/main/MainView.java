@@ -1,6 +1,7 @@
 package simulador.view.main;
 
 import simulador.model.DTO.DijkstraResult;
+import simulador.model.algorithms.BFS;
 import simulador.model.algorithms.Dijkstra;
 import simulador.model.link.Link;
 import simulador.model.network.SimpleNetwork;
@@ -24,6 +25,7 @@ import java.awt.event.MouseMotionAdapter;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -310,7 +312,15 @@ public class MainView extends JComponent {
         						Node origin = mView.network.getNodes().get(originIndex);
         						Node dest = mView.network.getNodes().get(destIndex);
         						
+        						ArrayList<Node> visitados = new ArrayList<Node>();
+        						ArrayList<String> listVisitados = new ArrayList<String>();
+        						visitados.add(origin);
+        						listVisitados.add(origin.getLabel());
+        						
+        						
         						DijkstraResult result = (new Dijkstra().getMinDistance(mView.network.getNodes(), origin));
+        						List<Node> resultBFS = (new BFS().getMinDistance(mView.network.getNodes(), origin, dest, visitados, listVisitados));
+        						//System.out.println(resultBFS);
         						List<Node> sPath = result.getShortestPath(dest);
         						System.out.print("Simulação " + i + "\n");
         						writter.write("Simulação " + i + "\n");
