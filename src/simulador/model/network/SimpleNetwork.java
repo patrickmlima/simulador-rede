@@ -240,12 +240,23 @@ public class SimpleNetwork {
 	}
 	
 	public Call createCallFirstFit(List<Node> path) {
+		return this.createCallFirstFit(path, null);
+	}
+	
+	public Call createCallFirstFit(List<Node> path, Call call) {
 		int pathSize = path.size();
 		ArrayList<Link> pathLinks = new ArrayList<Link>();
 		
 		Node origin = path.get(0);
 		Node nextNode = path.get(1);
 		Link firstLink = origin.getLinkToNode(nextNode);
+		
+		// libera lambda
+		if(call != null) {
+			for(Link l : call.getLinks()) {
+				l.setLambdaStatus(call.getLambda(), true);
+			}
+		}
 		
 		boolean lambdaChosen = false;
 		Integer selectedLambda = -1;
@@ -275,7 +286,13 @@ public class SimpleNetwork {
 			}
 		} while(true);
 		if(lambdaChosen) {
-			Call call = new Call(origin, path.get(path.size() - 1), selectedLambda);
+			if(call == null) {
+				call = new Call(origin, path.get(path.size() - 1));
+			}
+			call.setLambda(selectedLambda);
+			call.setPath(path);
+			call.setLinks(pathLinks);
+			
 			for(Link l : pathLinks) {
 				l.setLambdaStatus(selectedLambda, false);
 				l.addCall(call);
@@ -325,7 +342,7 @@ public class SimpleNetwork {
 				Call c = null;
 				for(List<Node> path : allPaths) {
 					this.printPath(path);
-					c = this.createCallFirstFit(path);
+					c = this.createCallFirstFit(path, call);
 					if(c != null) {
 						System.out.println("Chamada reestabelecida\n");
 						writer.write("Chamada reestabelecida\n\n");

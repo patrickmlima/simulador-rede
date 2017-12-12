@@ -18,6 +18,11 @@ public class Call {
 	
 	private List<Link> links;
 	
+	public Call(Node origin, Node destination) {
+		this.origin = origin;
+		this.destination = destination;
+	}
+	
 	public Call(Node origin, Node destination, Integer lambda) {
 		this.origin = origin;
 		this.destination = destination;
@@ -47,6 +52,7 @@ public class Call {
 
 	public void setLambda(Integer lambda) {
 		this.lambda = lambda;
+		this.isEstablished = (lambda != null);
 	}
 
 	public Boolean getIsEstablished() {
