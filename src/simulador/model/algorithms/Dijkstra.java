@@ -38,19 +38,17 @@ public class Dijkstra {
 			list.remove(0);
 			
 			for(Link link : u.getLinks()) {
+				if(!link.getIsActive()) {
+					continue;
+				}
 				Node v = link.getFrom().equals(u) ? link.getTo() : link.getFrom();
 				Float tmp = dist.get(u) + link.getLength();
-//				if(tmp != null) {
-//					tmp = tmp + link.getLength();
-//				}
-//				if(dist.get(v.getId()) != null) {
-					if(tmp < dist.get(v) )  {
-						v.setTmpDistance(tmp);
-						listNo.add(u.getLabel());
-						dist.put(v, tmp);
-						pervious.put(v, u);
-					}
-//				}
+				if(tmp < dist.get(v) )  {
+					v.setTmpDistance(tmp);
+					listNo.add(u.getLabel());
+					dist.put(v, tmp);
+					pervious.put(v, u);
+				}
 			}
 		}
 		return new DijkstraResult(origin, dist, pervious);

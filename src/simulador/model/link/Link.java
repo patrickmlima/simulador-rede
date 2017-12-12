@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
+import simulador.model.call.Call;
 import simulador.model.node.Node;
 
 public class Link {
@@ -24,6 +25,10 @@ public class Link {
 	private Integer numLambdas;
 	
 	private HashMap<Integer, Boolean> availableLambdas = new HashMap<Integer, Boolean>();
+	
+	private List<Call> calls = new ArrayList<Call>();
+	
+	private Boolean isActive = true;
 	
 	public Link() {
 		this(null, null, true, null, null, null);
@@ -140,6 +145,7 @@ public class Link {
 	 
 	 public void resetAvailableLambdas() {
 		 this.availableLambdas = new HashMap<Integer, Boolean>();
+		 this.calls.clear();
 	 }
 	 
 	 public void setLambdaStatus(int lambda, boolean isAvailable) {
@@ -193,4 +199,32 @@ public class Link {
 		 }
 		 return true;
 	 }
+
+	public Boolean getIsActive() {
+		return isActive;
+	}
+
+	public void setIsActive(Boolean isActive) {
+		this.isActive = isActive;
+	}
+
+	public List<Call> getCalls() {
+		return calls;
+	}
+
+	public void setCalls(List<Call> calls) {
+		this.calls = calls;
+	}
+	
+	public void addCall(Call call) {
+		if(!this.calls.contains(call)) {
+			this.calls.add(call);
+		}
+	}
+	
+	public void removeCall(Call call) {
+		if(this.calls.contains(call)) {
+			this.calls.remove(call);
+		}
+	}
 }

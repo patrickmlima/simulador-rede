@@ -3,6 +3,7 @@ package simulador.view.main;
 import simulador.model.DTO.DijkstraResult;
 import simulador.model.algorithms.BFS;
 import simulador.model.algorithms.Dijkstra;
+import simulador.model.call.Call;
 import simulador.model.link.Link;
 import simulador.model.network.SimpleNetwork;
 import simulador.model.node.Node;
@@ -312,16 +313,17 @@ public class MainView extends JComponent {
         						Node origin = mView.network.getNodes().get(originIndex);
         						Node dest = mView.network.getNodes().get(destIndex);
         						
-        						ArrayList<Node> visitados = new ArrayList<Node>();
-        						ArrayList<String> listVisitados = new ArrayList<String>();
-        						visitados.add(origin);
-        						listVisitados.add(origin.getLabel());
-        						
-        						
         						DijkstraResult result = (new Dijkstra().getMinDistance(mView.network.getNodes(), origin));
-        						List<Node> resultBFS = (new BFS().getMinDistance(mView.network.getNodes(), origin, dest, visitados, listVisitados));
-        						//System.out.println(resultBFS);
         						List<Node> sPath = result.getShortestPath(dest);
+        						
+//        						ArrayList<Node> visitados = new ArrayList<Node>();
+//        						ArrayList<String> listVisitados = new ArrayList<String>();
+//        						visitados.add(origin);
+//        						listVisitados.add(origin.getLabel());
+//        						List<List<Node>> resultBFS = (new BFS().getMinDistance(mView.network.getNodes(), origin, dest, visitados, listVisitados));
+//        						System.out.println(resultBFS.size());
+//        						List<List<Node>> resultBFS = new BFS().getAllPaths(mView.network.getNodes(), origin, dest);
+        						
         						System.out.print("Simulação " + i + "\n");
         						writter.write("Simulação " + i + "\n");
         						System.out.print("From: " + origin.getLabel() + " - To: " + dest.getLabel() + "\n");
@@ -346,17 +348,24 @@ public class MainView extends JComponent {
         						writter.write("Distance: " + distanceValue.toString() + "\n");
         						System.out.print("Distance: " + distanceValue.toString() + "\n");
         						
-        						System.out.println("Need select lambda");
-        						Integer lambda = mView.network.selectLambdaFirstFit(sPath);
+        						System.out.println("Selecionando lambda...");
+//        						Integer lambda = mView.network.selectLambdaFirstFit(sPath);
+        						Call call = mView.network.createCallFirstFit(sPath);
         						writter.write("Chamada Perdida: ");
-        						if(lambda == null) {
+        						if(call == null || !call.getIsEstablished()) {
         							qtdBloqueios += 1;
-        							writter.write("SIM");
+        							writter.write("Chamada perdida");
+        							mView.network.addCall(new Call(origin, dest, null));
         						} else {
-        							writter.write("NÃO");
+        							writter.write("Chamada estabelecida");
+        							mView.network.addCall(call);
         						}
         						writter.write("\n");
-        						System.out.println("Chamada Perdida: " + (lambda == null ? "SIM" : "NÃO"));
+        						
+        						if(i >= (value * 0.6)) {
+        							mView.network.testSurvival(writter);
+        							i = value;
+        						}
         						System.out.println("----------------------------------------------------------------------------------\n");
         						
         						writter.write("----------------------------------------------------------------------------------\n\n");
