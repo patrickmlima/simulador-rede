@@ -47,6 +47,9 @@ public class BFS {
 
 		Node u = visitados.get(visitados.size()-1);
 		for(Link link : u.getLinks()) {
+			if(!link.getIsActive()) {
+				continue;
+			}
 			Node v = link.getFrom().equals(u) ? link.getTo() : link.getFrom();
 			/*Float tmp = dist.get(u) + link.getLength();
 						if(tmp < dist.get(v) )  {
@@ -70,6 +73,10 @@ public class BFS {
 		}
 
 		for (Link link : u.getLinks()) {
+			if(!link.getIsActive()) {
+				continue;
+			}
+			
 			Node v = link.getFrom().equals(u) ? link.getTo() : link.getFrom();
 			if(visitados.contains(v) || v.equals(dest)) {
 				continue;

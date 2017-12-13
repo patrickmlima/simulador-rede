@@ -1,7 +1,6 @@
 package simulador.view.main;
 
 import simulador.model.DTO.DijkstraResult;
-import simulador.model.algorithms.BFS;
 import simulador.model.algorithms.Dijkstra;
 import simulador.model.call.Call;
 import simulador.model.link.Link;
@@ -26,10 +25,8 @@ import java.awt.event.MouseMotionAdapter;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
 import javax.swing.JButton;
@@ -372,7 +369,7 @@ public class MainView extends JComponent {
         						writter.flush();
         					}
         					float pb = Float.parseFloat(qtdBloqueios.toString())/value;
-        					writter.write("PROBABILIDADE DE BLOQUEIO: " + String.format("%.2f", pb) + "\n");
+        					writter.write("PROBABILIDADE DE BLOQUEIO: " + String.format("%.5f", pb) + "\n");
         					System.out.println("PROBABILIDADE DE BLOQUEIO: " + pb + "\n");
         					writter.write("----------------------------------------------------------------------------------\n\n");
         					writter.close();

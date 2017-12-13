@@ -341,7 +341,7 @@ public class SimpleNetwork {
 				
 				Call c = null;
 				for(List<Node> path : allPaths) {
-					this.printPath(path);
+					this.printPath(path, writer);
 					c = this.createCallFirstFit(path, call);
 					if(c != null) {
 						System.out.println("Chamada reestabelecida\n");
@@ -364,15 +364,21 @@ public class SimpleNetwork {
 			link.setIsActive(true);
 		}
 		rateTotal = rateTotal / Float.parseFloat(new Integer(this.getLinks().size()).toString());
-		System.out.println("Taxa de sucesso Total: " + String.format("%.4f", rateTotal));
-		writer.write("Taxa de sucesso Total: " + String.format("%.4f", rateTotal) + "\n");
+		System.out.println("Taxa de sucesso Total: " + String.format("%.5f", rateTotal));
+		writer.write("Taxa de sucesso Total: " + String.format("%.5f", rateTotal) + "\n");
 	}
 	
-	private void printPath(List<Node> visitados) {
+	private void printPath(List<Node> visitados, BufferedWriter writer) throws IOException {
 		for (Node node : visitados) {
-			System.out.print(node.getLabel() +" | ");
+			System.out.print(node.getLabel() + " | ");
+			if(writer != null) {
+				writer.write(node.getLabel() + " | ");
+			}
 		}
-		System.out.println(" ");
+		System.out.print("\n");
+		if(writer != null) {
+			writer.write("\n");
+		}
 	}
 	
 	private List<List<Node>> insertShortestPath(List<Node> sPath, List<List<Node>> paths) {
